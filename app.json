@@ -25,6 +25,12 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "878959bf-5d36-4414-ab8e-0bf5599ad5fc"
+      }
+    },
+    "owner": "lucasmzt"
   }
 }
