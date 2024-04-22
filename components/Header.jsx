@@ -2,8 +2,9 @@ import React from 'react'
 import { View, Image } from 'react-native';
 import Constants from 'expo-constants';
 import GatoLogo from '../assets/gato-logo.svg';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
-const Header = () => {
+const Header = ({isLoggedIn, handleLogout}) => {
     return (
         <View style={{
             display: 'flex',
@@ -16,16 +17,8 @@ const Header = () => {
             paddingVertical: 6,
             paddingHorizontal: 12,
         }}>
-            {/* <Image
-              // style={{ width: 30, height: 30 }}
-              source={require('../assets/gato-logo.svg')}
-            /> */}
             <GatoLogo width={90} height={45} />
-            <Image
-              style={{ width: 30, height: 30 }}
-              source={require('../assets/user.png')}
-            />
-
+            {isLoggedIn && <Ionicons onPress={handleLogout} name="log-out-outline" size={30} color='white' />}
         </View>
     );
 }

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import HomeScreen from './screens/HomeScreen';
 import UsersScreen from './screens/UsersScreen';
+import LoginScreen from './screens/LoginScreen';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -28,51 +29,70 @@ const UsersStackNavigator = () => {
   );
 }
 
+const MainNavigator = ({ isLoggedIn, handleLogout }) => (
+  <Tab.Navigator
+    screenOptions={({ route }) => ({
+      header: props => <Header {...props} isLoggedIn={isLoggedIn} handleLogout={handleLogout} />,
+      tabBarStyle: {
+          height: 40,
+          paddingHorizontal: 5,
+          paddingTop: 0,
+          backgroundColor: 'black',
+          position: 'absolute',
+          borderTopWidth: 2,
+          borderTopColor: 'gray',
+      },
+      tabBarActiveTintColor: 'greenyellow',
+      tabBarInactiveTintColor: 'whitesmoke',
+      tabBarShowLabel: false,
+      tabBarIcon: ({ focused, color, size }) => {
+        let iconName;
+
+        switch (route.name) {
+          case 'Home':
+            iconName = 'home';
+            break;
+          case 'Users':
+            iconName = 'people';
+            break;
+          default:
+            iconName = 'albums';
+            break;
+        }
+
+        iconName += focused ? '' : '-outline';
+        
+        return <Ionicons name={iconName} size={size} color={color} />;
+      },
+    })}
+  >
+    <Tab.Screen name="Home" component={HomeScreen} />
+    <Tab.Screen name="Users" component={UsersStackNavigator} />
+  </Tab.Navigator>
+);
+
 const App = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const validateUser = (username, password) => {
+    if (username === 'gato' && password === 'gato') {
+      setIsLoggedIn(true);
+      return true;
+    } else {
+      return false;
+    }
+  }
   return (
     <NavigationContainer>
-      <StatusBar style="light" />
+      <StatusBar 
+        style="light" 
+      />
       <QueryClientProvider client={queryClient}>
-        <Tab.Navigator
-          screenOptions={({ route }) => ({
-            header: props => <Header {...props}/>,
-            tabBarStyle: {
-                height: 40,
-                paddingHorizontal: 5,
-                paddingTop: 0,
-                backgroundColor: 'black',
-                position: 'absolute',
-                borderTopWidth: 2,
-                borderTopColor: 'gray',
-            },
-            tabBarActiveTintColor: 'greenyellow',
-            tabBarInactiveTintColor: 'whitesmoke',
-            tabBarShowLabel: false,
-            tabBarIcon: ({ focused, color, size }) => {
-              let iconName;
-  
-              switch (route.name) {
-                case 'Home':
-                  iconName = 'home';
-                  break;
-                case 'Users':
-                  iconName = 'people';
-                  break;
-                default:
-                  iconName = 'albums';
-                  break;
-              }
-
-              iconName += focused ? '' : '-outline';
-              
-              return <Ionicons name={iconName} size={size} color={color} />;
-            },
-
-          })}
-        >
-          <Tab.Screen name="Home" component={HomeScreen} />
-          <Tab.Screen name="Users" component={UsersStackNavigator} />
-        </Tab.Navigator>
+        {
+          isLoggedIn 
+          ? <MainNavigator isLoggedIn={isLoggedIn} handleLogout={() => setIsLoggedIn(false)}/>
+          : <LoginScreen handleLogin={validateUser} />
+        }
       </QueryClientProvider>
     </NavigationContainer>
   );
