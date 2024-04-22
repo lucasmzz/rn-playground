@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
 import HomeScreen from './screens/HomeScreen';
 import UsersScreen from './screens/UsersScreen';
 import LoginScreen from './screens/LoginScreen';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import ProfileScreen from './screens/ProfileScreen';
-import Header
- from './components/Header';
+import Header from './components/Header';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { StatusBar } from 'expo-status-bar';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -19,8 +18,25 @@ const queryClient = new QueryClient();
 const UsersStackNavigator = () => {
   return (
     <Stack.Navigator 
+      mode="modal"
       screenOptions={{
-        headerShown: false
+        headerShown: false,
+        cardStyle: { backgroundColor: 'transparent' },
+        cardStyleInterpolator: ({ current: { progress } }) => ({
+          cardStyle: {
+            opacity: progress.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 1],
+            }),
+          },
+          overlayStyle: {
+            opacity: progress.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0, 0.5],
+              extrapolate: 'clamp',
+            }),
+          },
+        }),
       }}
     >
       <Stack.Screen name="UsersList" component={UsersScreen} />
@@ -31,6 +47,7 @@ const UsersStackNavigator = () => {
 
 const MainNavigator = ({ isLoggedIn, handleLogout }) => (
   <Tab.Navigator
+    sceneContainerStyle={{ backgroundColor: 'black' }}
     screenOptions={({ route }) => ({
       header: props => <Header {...props} isLoggedIn={isLoggedIn} handleLogout={handleLogout} />,
       tabBarStyle: {
@@ -84,9 +101,7 @@ const App = () => {
   }
   return (
     <NavigationContainer>
-      <StatusBar 
-        style="light" 
-      />
+      <StatusBar backgroundColor="black" style="light" />
       <QueryClientProvider client={queryClient}>
         {
           isLoggedIn 
